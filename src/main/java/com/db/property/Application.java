@@ -1,8 +1,8 @@
 package com.db.property;
 
 import org.springframework.boot.autoconfigure.SpringBootApplication;
-import org.springframework.context.ApplicationContextInitializer;
 import org.springframework.context.ConfigurableApplicationContext;
+import org.springframework.core.env.ConfigurableEnvironment;
 
 //@Slf4j
 @SpringBootApplication
@@ -26,18 +26,42 @@ public class Application extends ApplicationContextReloader {
 	}
 
 	@Override
-	public String reloadFlagPropertyName() {
-		return "reload.flag";
-	}
-
-	@Override
 	public int contextMonitorSleepTimeInSeconds() {
 		return 20;
 	}
 
 	@Override
-	public ApplicationContextInitializer<ConfigurableApplicationContext> contextInitializer() {
-		return new DatabasePropertiesBasedContextInitializer();
+	public Comparable<Object> reloadPropertyValue(
+			ConfigurableApplicationContext context) {
+		return context.getBean(PropertiesJPARepository.class)
+				.findByPropertyKey("reload.flag");
+	}
+
+	@Override
+	public String getDatabaseUsername(ConfigurableEnvironment env) {
+		return env.getProperty("database.username");
+	}
+
+	@Override
+	public String getDatabasePassword(ConfigurableEnvironment env) {
+		return env.getProperty("database.password");
+	}
+
+	@Override
+	public String getDatabaseURI(ConfigurableEnvironment env) {
+		return env.getProperty("database.url");
+	}
+
+	@Override
+	public String getPropertiesSelectQuery(ConfigurableEnvironment env) {
+		return env.getProperty("database.config.select.query");
+	}
+
+	@Override
+	public boolean isConfigEnabled(ConfigurableEnvironment env) {
+		Boolean dbConfigEnabled = 
+				env.getProperty("database.config.enabled", Boolean.class);
+		return dbConfigEnabled!=null && dbConfigEnabled;
 	}
 
 }

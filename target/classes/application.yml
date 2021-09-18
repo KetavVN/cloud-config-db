@@ -4,6 +4,10 @@ database:
  password: S3cr3t1!
  driver:
   class: com.mysql.cj.jdbc.Driver
+ config:
+  enabled: true
+  select:
+   query: select property_key, property_value from properties;
 
 
 spring:
